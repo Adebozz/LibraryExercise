@@ -9,18 +9,10 @@ package resources;
 import java.util.*;
 
 public class ResourceExtent {
-	private static Map resources = new Hashtable();
-	private static int idCounter = 0;
-	public static ResourceExtent INSTANCE = new ResourceExtent();
+	private final Map resources = new Hashtable();
+	private int idCounter = 0;
 	
-	private ResourceExtent() {
-		// Initialise and register library resources
-		createResource(new Resource("Book", "Lord of the Rings", "J.R.Tolkien"));
-		createResource(new Resource("Book", "2001 Space Odessey", "Arthur C Clarke"));
-		createResource(new Resource("Book", "How to win at bingo", "Two fat ladies"));
-		createResource(new Resource("Book", "The Cold. Don't let it kill you.", "J.R.Hartley"));
-		createResource(new Resource("Game", "Halo", "X-Box"));
-		createResource(new Resource("Game", "Midtown madness", "PS2"));
+	public ResourceExtent() {
 	}
 	public void createResource(Resource resource) {
 		resource.setId(getNextId());

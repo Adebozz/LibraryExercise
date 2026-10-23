@@ -12,20 +12,10 @@ import resources.*;
 import subscribers.*;
 
 public class LoanExtent {
-	private static Map loans = new Hashtable();
-	private static int idCounter = 0;
-	public static LoanExtent INSTANCE = new LoanExtent();
+	private final Map loans = new Hashtable();
+	private int idCounter = 0;
 	
-	private LoanExtent() {
-		try {
-			//Initialise and register resources currently on loan
-			createLoan(ResourceExtent.INSTANCE.findByPrimaryKey("R1"), (Student)SubscriberExtent.INSTANCE.findByPrimaryKey("S3"),new GregorianCalendar(2004, 00, 20));
-			createLoan(ResourceExtent.INSTANCE.findByPrimaryKey("R5"), (Student)SubscriberExtent.INSTANCE.findByPrimaryKey("S3"),new GregorianCalendar(2004, 00, 01));
-			createLoan(ResourceExtent.INSTANCE.findByPrimaryKey("R4"), (Pensioner)SubscriberExtent.INSTANCE.findByPrimaryKey("S1"),new GregorianCalendar(2004, 00, 01));
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-		} 
+	public LoanExtent() {
 	}
 	public Loan createLoan(Resource resource, Object subscriber, GregorianCalendar gregorianCalendar) throws Exception {
 		if ( resource == null ) {

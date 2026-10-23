@@ -7,24 +7,36 @@ import subscribers.*;
 import resources.*;
 
 public class LibraryServices {
+	private final ResourceExtent resources;
+	private final SubscriberExtent subscribers;
+	private final LoanExtent loans;
 	
-	public LibraryServices() {
+	public LibraryServices(ResourceExtent resources, SubscriberExtent subscribers, LoanExtent loans) {
+		this.resources = resources;
+		this.subscribers = subscribers;
+		this.loans = loans;
 	}
 	public void addResource(Resource resource) {
-		ResourceExtent.INSTANCE.createResource(resource);
+		resources.createResource(resource);
 	}
 	public void addPensioner(Pensioner pensioner) {
-		SubscriberExtent.INSTANCE.createPensioner(pensioner);
+		subscribers.createPensioner(pensioner);
 	}
 	public void addStudent(Student student) {
-		SubscriberExtent.INSTANCE.createStudent(student);
+		subscribers.createStudent(student);
 	}
 	public void addPremiumMember(PremiumMember premiumMember) {
-		SubscriberExtent.INSTANCE.createPremiumMember(premiumMember);
+		subscribers.createPremiumMember(premiumMember);
+	}
+	public Resource findResource(String id) {
+		return resources.findByPrimaryKey(id);
+	}
+	public Object findSubscriber(String id) {
+		return subscribers.findByPrimaryKey(id);
 	}
 	
-	public void loanResourceToSubscriber(Resource resource, Object subscriber, GregorianCalendar gregorianCalendar) throws Exception {
-		LoanExtent.INSTANCE.createLoan(resource, subscriber, gregorianCalendar);
+	public Loan loanResourceToSubscriber(Resource resource, Object subscriber, GregorianCalendar gregorianCalendar) throws Exception {
+		return loans.createLoan(resource, subscriber, gregorianCalendar);
 	}
 	public void returnedResource(Loan loan, GregorianCalendar gregorianCalendar) {
 		if ( loan != null ) {

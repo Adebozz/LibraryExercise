@@ -2,6 +2,7 @@ package library;
 
 import java.util.GregorianCalendar;
 
+import loans.LoanExtent;
 import reporting.ConsoleOutputService;
 import resources.*;
 import subscribers.*;
@@ -9,13 +10,17 @@ import subscribers.*;
 public class LibrarySimulator {
 	LibraryServices library;
 	LibraryReportingService reporting;
-	public LibrarySimulator() {
-		library = new LibraryServices();
-		reporting = new LibraryReportingService();
+	public LibrarySimulator() throws Exception {
+		ResourceExtent resources = new ResourceExtent();
+		SubscriberExtent subscribers = new SubscriberExtent();
+		LoanExtent loans = new LoanExtent();
+		library = new LibraryServices(resources, subscribers, loans);
+		reporting = new LibraryReportingService(resources, subscribers, loans);
 		reporting.addOutputService(new ConsoleOutputService());
+		SeedData.load(library);
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		LibrarySimulator librarySimulator = new LibrarySimulator();
 		librarySimulator.runSimulator();
 	}
@@ -27,8 +32,8 @@ public class LibrarySimulator {
 	}
 	public void runSimulator() {
 		reporting.outputOutstandingLoansReport();
-		Resource resource = ResourceExtent.INSTANCE.findByPrimaryKey("R1");
-		Object subscriber = SubscriberExtent.INSTANCE.findByPrimaryKey("S1");
+		Resource resource = library.findResource("R1");
+		Object subscriber = library.findSubscriber("S1");
 		try {
 			library.loanResourceToSubscriber(resource, subscriber, new GregorianCalendar(2004, 00, 20));
 		}

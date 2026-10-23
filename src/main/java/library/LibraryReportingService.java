@@ -21,13 +21,22 @@ import subscribers.SubscriberExtent;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class LibraryReportingService {
+	private final ResourceExtent resources;
+	private final SubscriberExtent subscribers;
+	private final LoanExtent loans;
 	Collection outputServices = new Vector();
+	
+	public LibraryReportingService(ResourceExtent resources, SubscriberExtent subscribers, LoanExtent loans) {
+		this.resources = resources;
+		this.subscribers = subscribers;
+		this.loans = loans;
+	}
 	public void outputSubscribersReport() {
 		OutputService outputService;
 		for (Iterator iter = outputServices.iterator(); iter.hasNext();) {
 			outputService = (OutputService)iter.next();
 			try {
-				outputService.outputExtent("Subscribers", SubscriberExtent.INSTANCE.getSubscribers());
+				outputService.outputExtent("Subscribers", subscribers.getSubscribers());
 			}
 			catch (Exception e) {
 				System.out.println("Exception while outputing subscriber to service " + outputService.getName() + " - Original message: "+e.getMessage());
@@ -44,7 +53,7 @@ public class LibraryReportingService {
 		for (Iterator iter = outputServices.iterator(); iter.hasNext();) {
 			outputService = (OutputService)iter.next();
 			try {
-				outputService.outputExtent("Resources", ResourceExtent.INSTANCE.getResources());
+				outputService.outputExtent("Resources", resources.getResources());
 			}
 			catch (Exception e) {
 				System.out.println("Exception while outputing resource to service " + outputService.getName() + " - Original message: "+e.getMessage());
@@ -54,9 +63,9 @@ public class LibraryReportingService {
 	
 	public void outputOutstandingLoansReport() {
 		OutputService outputService;
-		Collection loans = LoanExtent.INSTANCE.getLoans();
+		Collection allLoans = loans.getLoans();
 		Collection outstandingLoans = new Vector();
-		for (Iterator iter = loans.iterator(); iter.hasNext();) {
+		for (Iterator iter = allLoans.iterator(); iter.hasNext();) {
 			Loan element = (Loan) iter.next();
 			if ( element.getReturnDate() == null ) {
 				outstandingLoans.add(element);
