@@ -7,10 +7,11 @@
 package resources;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ResourceExtent {
 	private final Map resources = new Hashtable();
-	private int idCounter = 0;
+	private final AtomicInteger idCounter = new AtomicInteger();
 	
 	public ResourceExtent() {
 	}
@@ -25,6 +26,6 @@ public class ResourceExtent {
 		return resources.values();
 	}
 	public String getNextId() {
-		return "R" + (idCounter++);
+		return "R" + idCounter.getAndIncrement();
 	}
 }

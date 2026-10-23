@@ -7,13 +7,14 @@
 package loans;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import resources.*;
 import subscribers.*;
 
 public class LoanExtent {
 	private final Map loans = new Hashtable();
-	private int idCounter = 0;
+	private final AtomicInteger idCounter = new AtomicInteger();
 	
 	public LoanExtent() {
 	}
@@ -65,6 +66,6 @@ public class LoanExtent {
 		return loans.values();
 	}
 	public String getNextId() {
-		return "L" + (idCounter++);
+		return "L" + idCounter.getAndIncrement();
 	}
 }

@@ -15,7 +15,7 @@ public class LibrarySimulator {
 		SubscriberExtent subscribers = new SubscriberExtent();
 		LoanExtent loans = new LoanExtent();
 		library = new LibraryServices(resources, subscribers, loans);
-		reporting = new LibraryReportingService(resources, subscribers, loans);
+		reporting = new LibraryReportingService(library);
 		reporting.addOutputService(new ConsoleOutputService());
 		SeedData.load(library);
 	}

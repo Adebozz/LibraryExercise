@@ -7,10 +7,11 @@
 package subscribers;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SubscriberExtent {
 	private final Map subscribers = new Hashtable();
-	private int idCounter = 0;
+	private final AtomicInteger idCounter = new AtomicInteger();
 	
 	public SubscriberExtent() {
 	}
@@ -27,7 +28,7 @@ public class SubscriberExtent {
 		subscribers.put(premiumMember.getId(), premiumMember);
 	}
 	public String getNextId() {
-		return "S" + (idCounter++);
+		return "S" + idCounter.getAndIncrement();
 	}
 	public Object findByPrimaryKey(String id) {
 		return subscribers.get(id);

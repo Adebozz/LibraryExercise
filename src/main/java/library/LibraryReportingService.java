@@ -7,12 +7,9 @@
 package library;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import loans.Loan;
-import loans.LoanExtent;
-import resources.ResourceExtent;
 import reporting.OutputService;
-import subscribers.SubscriberExtent;
 
 /**
  * @author Simon
@@ -21,22 +18,20 @@ import subscribers.SubscriberExtent;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class LibraryReportingService {
-	private final ResourceExtent resources;
-	private final SubscriberExtent subscribers;
-	private final LoanExtent loans;
-	Collection outputServices = new Vector();
+	private final LibraryServices library;
+	// Output services may be added while a report is running on another thread
+	private final Collection outputServices = new CopyOnWriteArrayList();
 	
-	public LibraryReportingService(ResourceExtent resources, SubscriberExtent subscribers, LoanExtent loans) {
-		this.resources = resources;
-		this.subscribers = subscribers;
-		this.loans = loans;
+	public LibraryReportingService(LibraryServices library) {
+		this.library = library;
 	}
 	public void outputSubscribersReport() {
+		Collection subscribers = library.subscribersSnapshot();
 		OutputService outputService;
 		for (Iterator iter = outputServices.iterator(); iter.hasNext();) {
 			outputService = (OutputService)iter.next();
 			try {
-				outputService.outputExtent("Subscribers", subscribers.getSubscribers());
+				outputService.outputExtent("Subscribers", subscribers);
 			}
 			catch (Exception e) {
 				System.out.println("Exception while outputing subscriber to service " + outputService.getName() + " - Original message: "+e.getMessage());
@@ -49,11 +44,12 @@ public class LibraryReportingService {
 	 *
 	 */
 	public void outputResourcesReport() {
+		Collection resources = library.resourcesSnapshot();
 		OutputService outputService;
 		for (Iterator iter = outputServices.iterator(); iter.hasNext();) {
 			outputService = (OutputService)iter.next();
 			try {
-				outputService.outputExtent("Resources", resources.getResources());
+				outputService.outputExtent("Resources", resources);
 			}
 			catch (Exception e) {
 				System.out.println("Exception while outputing resource to service " + outputService.getName() + " - Original message: "+e.getMessage());
@@ -62,15 +58,8 @@ public class LibraryReportingService {
 	}
 	
 	public void outputOutstandingLoansReport() {
+		Collection outstandingLoans = library.outstandingLoansSnapshot();
 		OutputService outputService;
-		Collection allLoans = loans.getLoans();
-		Collection outstandingLoans = new Vector();
-		for (Iterator iter = allLoans.iterator(); iter.hasNext();) {
-			Loan element = (Loan) iter.next();
-			if ( element.getReturnDate() == null ) {
-				outstandingLoans.add(element);
-			}
-		}
 		for (Iterator iter = outputServices.iterator(); iter.hasNext();) {
 			outputService = (OutputService)iter.next();
 			try {

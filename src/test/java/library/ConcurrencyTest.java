@@ -156,7 +156,7 @@ class ConcurrencyTest {
 	@Test
 	void reportsRunWhileLoansAreBeingMade() throws Exception {
 		Queue<Throwable> reportFailures = new ConcurrentLinkedQueue<>();
-		LibraryReportingService reporting = new LibraryReportingService(resources, subscribers, loans);
+		LibraryReportingService reporting = new LibraryReportingService(library);
 		reporting.addOutputService(new IteratingOutputService(reportFailures));
 		AtomicBoolean loansFinished = new AtomicBoolean(false);
 
