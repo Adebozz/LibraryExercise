@@ -36,8 +36,8 @@ public class Pensioner  implements OutputServiceContributor {
 	
 	
 	public void addLoan(Loan loan) throws Exception {
-		int projectedLoanCount = loans.size();
-		if ( projectedLoanCount > getMaxBorrowing() ) { 
+		int currentLoanCount = loans.size();
+		if ( currentLoanCount >= getMaxBorrowing() ) { 
 			throw new Exception(name+" has reached their borrowing limit.");
 		}
 		loan.setSubscriber(this);
