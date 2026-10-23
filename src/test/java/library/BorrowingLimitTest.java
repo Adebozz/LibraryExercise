@@ -14,6 +14,7 @@ import resources.Resource;
 import resources.ResourceExtent;
 import subscribers.Pensioner;
 import subscribers.PremiumMember;
+import subscribers.Student;
 import subscribers.SubscriberExtent;
 
 class BorrowingLimitTest {
@@ -51,6 +52,22 @@ class BorrowingLimitTest {
 		Resource eleventh = newBook();
 		assertThrows(Exception.class, () -> library.loanResourceToSubscriber(eleventh, member, TODAY));
 		assertEquals(10, member.getLoans().size());
+	}
+
+	// No limit is stated for Students in the written requirements; this locks
+	// in Student.getMaxBorrowing()'s existing value (6) as the behaviour,
+	// now that its mismatched Javadoc ("up to 5") has been corrected to match.
+	@Test
+	void studentCannotBorrowMoreThanSix() throws Exception {
+		Student student = new Student("Zach", "De Montfort University");
+		library.addStudent(student);
+		for (int i = 0; i < 6; i++) {
+			library.loanResourceToSubscriber(newBook(), student, TODAY);
+		}
+
+		Resource seventh = newBook();
+		assertThrows(Exception.class, () -> library.loanResourceToSubscriber(seventh, student, TODAY));
+		assertEquals(6, student.getLoans().size());
 	}
 
 	private Resource newBook() {

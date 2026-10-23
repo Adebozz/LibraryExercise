@@ -57,7 +57,7 @@ public class Student implements OutputServiceContributor {
 	}
 	
 	/**
-	 * Students may borrow up to 5 resources at any one time.
+	 * Students may borrow up to 6 resources at any one time.
 	 */
 	public int getMaxBorrowing() {
 		return 6;
