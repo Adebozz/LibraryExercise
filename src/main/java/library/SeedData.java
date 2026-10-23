@@ -14,6 +14,10 @@ import subscribers.Student;
  * Loans go through LibraryServices so the seed data obeys the same business
  * rules as any other loan. A seed loan that breaks a rule fails start-up
  * rather than being silently skipped.
+ *
+ * The original data loaned Halo (R4, a game) to Elsie (S1, a pensioner), which
+ * breaks requirement 4. Assumed the data was wrong, not the rule, and moved
+ * that loan to Zach (S2, a student).
  */
 public final class SeedData {
 	private SeedData() {
@@ -35,6 +39,6 @@ public final class SeedData {
 
 		library.loanResourceToSubscriber(library.findResource("R1"), library.findSubscriber("S3"), new GregorianCalendar(2004, 0, 20));
 		library.loanResourceToSubscriber(library.findResource("R5"), library.findSubscriber("S3"), new GregorianCalendar(2004, 0, 1));
-		library.loanResourceToSubscriber(library.findResource("R4"), library.findSubscriber("S1"), new GregorianCalendar(2004, 0, 1));
+		library.loanResourceToSubscriber(library.findResource("R4"), library.findSubscriber("S2"), new GregorianCalendar(2004, 0, 1));
 	}
 }

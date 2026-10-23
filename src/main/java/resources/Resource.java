@@ -42,9 +42,12 @@ public class Resource  implements OutputServiceContributor {
 	public String getTitle() {
 		return title;
 	}
+	public boolean isGame() {
+		return "Game".equals(type);
+	}
 	/**
-	 * Records the loan against this resource. Games may be loaned to Students
-	 * and Premium members; books may be loaned to any subscriber.
+	 * Records the loan against this resource. Who may borrow it is checked by
+	 * LoanExtent.createLoan before this is called.
 	 */
 	public void setLoan(Loan loan) throws Exception {
 		if ( this.loan != null ) {

@@ -24,6 +24,11 @@ public class LoanExtent {
 		if ( subscriber == null ) {
 			throw new NullPointerException("Subscriber parameter can not be null");
 		}
+		// Requirement 4: games may only be borrowed by Students. Checked before
+		// any state changes, so there is nothing to undo.
+		if ( resource.isGame() && !(subscriber instanceof Student) ) {
+			throw new Exception("Games may only be borrowed by students.");
+		}
 		Loan loan = new Loan();
 		// The loan must be complete before anything stores it: subscribers key
 		// their loans by id, so the id cannot change after addLoan.
