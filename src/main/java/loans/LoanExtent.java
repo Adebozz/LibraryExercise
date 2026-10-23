@@ -59,6 +59,24 @@ public class LoanExtent {
 		loans.put(loan.getId(), loan);
 		return loan;
 	}
+	/**
+	 * Undoes createLoan completely, as if the loan never happened. Used when a
+	 * loan cannot be audited. Not a return: a returned loan stays on record.
+	 */
+	public void cancelLoan(Loan loan) {
+		loans.remove(loan.getId());
+		loan.getResource().removeLoan();
+		Object subscriber = loan.getSubscriber();
+		if ( subscriber instanceof Student ) {
+			((Student)subscriber).removeLoan(loan);
+		}
+		else if ( subscriber instanceof Pensioner ) {
+			((Pensioner)subscriber).removeLoan(loan);
+		}
+		else if ( subscriber instanceof PremiumMember ) {
+			((PremiumMember)subscriber).removeLoan(loan);
+		}
+	}
 	public Loan findByPrimaryKey(String id) {
 		return (Loan)loans.get(id);
 	}

@@ -90,26 +90,99 @@ public class LibraryServices {
 		}
 	}
 
+	/**
+	 * Every attempt is audited, accepted or rejected. Audit is fail-closed: if
+	 * an accepted loan cannot be audited it is cancelled and the caller gets an
+	 * exception. All of this happens under the lock, so no one sees a loan that
+	 * is later cancelled.
+	 */
 	public Loan loanResourceToSubscriber(Resource resource, Object subscriber, GregorianCalendar gregorianCalendar) throws Exception {
 		lock.lock();
 		try {
-			return loans.createLoan(resource, subscriber, gregorianCalendar);
+			Loan loan;
+			try {
+				loan = loans.createLoan(resource, subscriber, gregorianCalendar);
+			}
+			catch (Exception rejection) {
+				auditRejection(rejection, "LOAN_REJECTED",
+						"resourceId=" + resourceId(resource) + " subscriberId=" + subscriberId(subscriber) + " date=" + format(gregorianCalendar));
+				throw rejection;
+			}
+			try {
+				audit.log(AUDIT_CATEGORY, "LOAN_CREATED", describe(loan, gregorianCalendar));
+			}
+			catch (RuntimeException auditFailure) {
+				loans.cancelLoan(loan);
+				throw new IllegalStateException("Loan cancelled because it could not be audited", auditFailure);
+			}
+			return loan;
 		}
 		finally {
 			lock.unlock();
 		}
 	}
+	/**
+	 * The return is checked and audited before it is applied, so if the audit
+	 * fails there is nothing to undo.
+	 */
 	public void returnedResource(Loan loan, GregorianCalendar gregorianCalendar) {
 		if ( loan == null ) {
 			return;
 		}
 		lock.lock();
 		try {
+			if ( loan.getReturnDate() != null ) {
+				IllegalStateException rejection = new IllegalStateException("Return date has already been assigned");
+				auditRejection(rejection, "RETURN_REJECTED", describe(loan, gregorianCalendar));
+				throw rejection;
+			}
+			audit.log(AUDIT_CATEGORY, "LOAN_RETURNED", describe(loan, gregorianCalendar));
 			loan.setReturnDate(gregorianCalendar);
 		}
 		finally {
 			lock.unlock();
 		}
+	}
+
+	/*
+	 * Audit details use ids only, never names: the audit store keeps entries
+	 * for a long time, so it should hold as little personal data as possible.
+	 */
+	private static final String AUDIT_CATEGORY = "LOAN";
+
+	/**
+	 * Records a refused attempt. If that audit fails too, the refusal still
+	 * reaches the caller, with the audit failure attached to it.
+	 */
+	private void auditRejection(Exception rejection, String action, String detail) {
+		try {
+			audit.log(AUDIT_CATEGORY, action, detail + " reason=\"" + String.valueOf(rejection.getMessage()).replace('"', '\'') + "\"");
+		}
+		catch (RuntimeException auditFailure) {
+			rejection.addSuppressed(auditFailure);
+		}
+	}
+	private static String describe(Loan loan, GregorianCalendar date) {
+		return "loanId=" + loan.getId() + " resourceId=" + resourceId(loan.getResource())
+				+ " subscriberId=" + subscriberId(loan.getSubscriber()) + " date=" + format(date);
+	}
+	private static String resourceId(Resource resource) {
+		return resource == null ? null : resource.getId();
+	}
+	private static String subscriberId(Object subscriber) {
+		if ( subscriber instanceof Student ) {
+			return ((Student)subscriber).getId();
+		}
+		if ( subscriber instanceof Pensioner ) {
+			return ((Pensioner)subscriber).getId();
+		}
+		if ( subscriber instanceof PremiumMember ) {
+			return ((PremiumMember)subscriber).getId();
+		}
+		return null;
+	}
+	private static String format(GregorianCalendar date) {
+		return date == null ? null : date.toZonedDateTime().toLocalDate().toString();
 	}
 
 	/*
