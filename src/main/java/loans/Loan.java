@@ -1,5 +1,7 @@
 package loans;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import resources.*;
 import reporting.OutputServiceContributor;
@@ -95,13 +97,18 @@ public class Loan  implements OutputServiceContributor {
 	
 	/**
 	 * A loan is overdue when the elapsed days exceed the resource's maximum loan
-	 * period. Handles month and year boundaries correctly.
+	 * period. Days are counted between calendar dates, so month and year
+	 * boundaries and time of day do not affect the result.
 	 */
 	public boolean isOverdue(GregorianCalendar today) {
 		if ( today == null || loanDate == null || resource == null ) {
 			return false;
 		}
-		int elapsedDays = today.get(Calendar.DAY_OF_MONTH) - loanDate.get(Calendar.DAY_OF_MONTH);
+		long elapsedDays = ChronoUnit.DAYS.between(toLocalDate(loanDate), toLocalDate(today));
 		return elapsedDays > resource.getMaxLoanPeriod();
+	}
+
+	private static LocalDate toLocalDate(GregorianCalendar calendar) {
+		return calendar.toZonedDateTime().toLocalDate();
 	}
 }
