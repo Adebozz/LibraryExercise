@@ -123,11 +123,12 @@ public class LibraryServices {
 	}
 	/**
 	 * The return is checked and audited before it is applied, so if the audit
-	 * fails there is nothing to undo.
+	 * fails there is nothing to undo. Returns the surcharge now due
+	 * (requirement 6) - zero for books and for on-time returns.
 	 */
-	public void returnedResource(Loan loan, GregorianCalendar gregorianCalendar) {
+	public double returnedResource(Loan loan, GregorianCalendar gregorianCalendar) {
 		if ( loan == null ) {
-			return;
+			return 0.0;
 		}
 		lock.lock();
 		try {
@@ -136,8 +137,10 @@ public class LibraryServices {
 				auditRejection(rejection, "RETURN_REJECTED", describe(loan, gregorianCalendar));
 				throw rejection;
 			}
-			audit.log(AUDIT_CATEGORY, "LOAN_RETURNED", describe(loan, gregorianCalendar));
+			double surcharge = loan.surchargeDue(gregorianCalendar);
+			audit.log(AUDIT_CATEGORY, "LOAN_RETURNED", describe(loan, gregorianCalendar) + " surcharge=" + surcharge);
 			loan.setReturnDate(gregorianCalendar);
+			return surcharge;
 		}
 		finally {
 			lock.unlock();

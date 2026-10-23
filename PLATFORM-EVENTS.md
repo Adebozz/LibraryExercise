@@ -55,7 +55,7 @@ Every event carries an `eventId` (for consumer-side dedup — see below), `occur
 }
 ```
 
-`dueDate`/`overdue`/`daysOverdue`/`surcharge` are derived from `Resource.getMaxLoanPeriod()`/`getSurcharge()` and `Loan.isOverdue()`, which already exist — the event is reporting facts the domain already computes, not inventing new ones. The `.v1` suffix is there from day one so a breaking payload change ships as `.v2` instead of mutating a type consumers already depend on.
+`dueDate`/`overdue`/`daysOverdue` are derived from `Resource.getMaxLoanPeriod()` and `Loan.isOverdue()`; `surcharge` is `Loan.surchargeDue(returnDate)` (added alongside this write-up — see `DECISIONS.md`), which now returns exactly this figure from `LibraryServices.returnedResource`. The event is reporting facts the domain already computes, not inventing new ones. The `.v1` suffix is there from day one so a breaking payload change ships as `.v2` instead of mutating a type consumers already depend on.
 
 ## Keeping things consistent if delivery fails
 

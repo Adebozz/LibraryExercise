@@ -108,6 +108,17 @@ public class Loan  implements OutputServiceContributor {
 		return elapsedDays > resource.getMaxLoanPeriod();
 	}
 
+	/**
+	 * Requirement 6: games incur a surcharge on return, based on platform and
+	 * loan period. Platform sets the rate (Resource.getSurcharge(), zero for
+	 * books); loan period decides whether it applies at all, not a per-day
+	 * multiplier - the rate is charged once a loan is returned overdue, and
+	 * not otherwise.
+	 */
+	public double surchargeDue(GregorianCalendar returnDate) {
+		return isOverdue(returnDate) ? resource.getSurcharge() : 0.0;
+	}
+
 	private static LocalDate toLocalDate(GregorianCalendar calendar) {
 		return calendar.toZonedDateTime().toLocalDate();
 	}

@@ -94,7 +94,22 @@ class AuditTest {
 
 		library.returnedResource(loan, RETURN_DATE);
 
-		assertEquals(new Entry("LOAN", "LOAN_RETURNED", "loanId=L0 resourceId=R0 subscriberId=S0 date=2004-02-03"), audit.last());
+		assertEquals(new Entry("LOAN", "LOAN_RETURNED", "loanId=L0 resourceId=R0 subscriberId=S0 date=2004-02-03 surcharge=0.0"), audit.last());
+	}
+
+	@Test
+	void lateGameReturnIncursPlatformSurchargeAndIsAudited() throws Exception {
+		Resource game = new Resource("Game", "Halo", "X-Box"); // 7 day loan period, 1.0 surcharge
+		library.addResource(game); // R1
+		Student student = new Student("Zach", "De Montfort University");
+		library.addStudent(student); // S1
+		Loan loan = library.loanResourceToSubscriber(game, student, LOAN_DATE);
+		GregorianCalendar lateReturn = new GregorianCalendar(2004, 0, 28); // 8 days later, overdue by 1
+
+		double surcharge = library.returnedResource(loan, lateReturn);
+
+		assertEquals(1.0, surcharge, "overdue X-Box game incurs its platform surcharge");
+		assertEquals(new Entry("LOAN", "LOAN_RETURNED", "loanId=L0 resourceId=R1 subscriberId=S1 date=2004-01-28 surcharge=1.0"), audit.last());
 	}
 
 	@Test
