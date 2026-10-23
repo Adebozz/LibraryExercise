@@ -25,20 +25,31 @@ public class LoanExtent {
 			throw new NullPointerException("Subscriber parameter can not be null");
 		}
 		Loan loan = new Loan();
-		resource.setLoan(loan);
-		if ( subscriber instanceof Student ) {
-			((Student)subscriber).addLoan(loan);
-		}
-		else if ( subscriber instanceof Pensioner ) {
-			((Pensioner)subscriber).addLoan(loan);
-		}
-		else if ( subscriber instanceof PremiumMember ) {
-			((PremiumMember)subscriber).addLoan(loan);
-		}
+		// The loan must be complete before anything stores it: subscribers key
+		// their loans by id, so the id cannot change after addLoan.
+		loan.setId(getNextId());
 		loan.setResource(resource);
 		loan.setSubscriber(subscriber);
 		loan.setLoanDate(gregorianCalendar);
-		loan.setId(getNextId());
+
+		resource.setLoan(loan);
+		try {
+			if ( subscriber instanceof Student ) {
+				((Student)subscriber).addLoan(loan);
+			}
+			else if ( subscriber instanceof Pensioner ) {
+				((Pensioner)subscriber).addLoan(loan);
+			}
+			else if ( subscriber instanceof PremiumMember ) {
+				((PremiumMember)subscriber).addLoan(loan);
+			}
+		}
+		catch (Exception e) {
+			// The subscriber rejected the loan, so release the resource again:
+			// a rejected loan must leave no trace.
+			resource.removeLoan();
+			throw e;
+		}
 		loans.put(loan.getId(), loan);
 		return loan;
 	}
