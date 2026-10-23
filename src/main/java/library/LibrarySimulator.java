@@ -4,10 +4,12 @@ import java.util.GregorianCalendar;
 
 import loans.LoanExtent;
 import reporting.ConsoleOutputService;
+import reporting.FileOutputService;
 import resources.*;
 import subscribers.*;
 
 public class LibrarySimulator {
+	static final String REPORT_FILE = "library-report.txt";
 	LibraryServices library;
 	LibraryReportingService reporting;
 	public LibrarySimulator() throws Exception {
@@ -17,6 +19,7 @@ public class LibrarySimulator {
 		library = new LibraryServices(resources, subscribers, loans);
 		reporting = new LibraryReportingService(library);
 		reporting.addOutputService(new ConsoleOutputService());
+		reporting.addOutputService(new FileOutputService(REPORT_FILE));
 		SeedData.load(library);
 	}
 	

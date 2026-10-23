@@ -25,3 +25,6 @@ replay_pid*
 
 # Maven build output
 target/
+
+# Written by FileOutputService when the simulator runs
+library-report.txt
