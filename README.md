@@ -8,9 +8,13 @@ You are not expected to make every change you could think of. We are more intere
 
 ## Getting started
 
-The project is an old-style Java project with package folders at the repository root. `LibrarySimulator` (package `library`) is the entry point and demonstrates current behaviour.
+Sources were moved from package folders at the repository root into the standard Maven layout (`src/main/java`, `src/test/java`) so the project builds with one command on a clean machine, no IDE required:
 
-Anyone on the team should be able to build, test and run your version with a single command on a clean machine, with no IDE. How you achieve that is up to you.
+- Build: `./mvnw compile`
+- Test: `./mvnw test`
+- Run: `./mvnw compile exec:java`
+
+`LibrarySimulator` (package `library`) is the entry point and demonstrates current behaviour.
 
 ## Requirements
 

@@ -57,7 +57,10 @@ public class Student implements OutputServiceContributor {
 	}
 	
 	/**
-	 * Students may borrow up to 6 resources at any one time.
+	 * Returns 6. An earlier version of this comment said 5 - neither number
+	 * is stated anywhere in the written requirements, so which one is
+	 * actually correct is an open question (see DECISIONS.md) rather than
+	 * something this comment should assert.
 	 */
 	public int getMaxBorrowing() {
 		return 6;

@@ -54,11 +54,12 @@ class BorrowingLimitTest {
 		assertEquals(10, member.getLoans().size());
 	}
 
-	// No limit is stated for Students in the written requirements; this locks
-	// in Student.getMaxBorrowing()'s existing value (6) as the behaviour,
-	// now that its mismatched Javadoc ("up to 5") has been corrected to match.
+	// No limit is stated for Students in the written requirements, and the
+	// existing Javadoc disagreed with the code (5 vs 6) - this pins today's
+	// actual behaviour (6) as a regression guard, not as confirmation that
+	// 6 is correct. See the open question in DECISIONS.md.
 	@Test
-	void studentCannotBorrowMoreThanSix() throws Exception {
+	void studentCurrentBorrowingLimitIsSix() throws Exception {
 		Student student = new Student("Zach", "De Montfort University");
 		library.addStudent(student);
 		for (int i = 0; i < 6; i++) {
