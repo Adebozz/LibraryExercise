@@ -9,6 +9,7 @@ import java.util.GregorianCalendar;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import audit.RecordingAuditLogger;
 import loans.LoanExtent;
 import resources.Resource;
 import resources.ResourceExtent;
@@ -28,7 +29,7 @@ class GameEligibilityTest {
 
 	@BeforeEach
 	void setUp() {
-		library = new LibraryServices(new ResourceExtent(), new SubscriberExtent(), new LoanExtent());
+		library = new LibraryServices(new ResourceExtent(), new SubscriberExtent(), new LoanExtent(), new RecordingAuditLogger());
 		game = new Resource("Game", "Halo", "X-Box");
 		library.addResource(game);
 	}

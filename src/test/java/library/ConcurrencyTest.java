@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import audit.RecordingAuditLogger;
 import loans.Loan;
 import loans.LoanExtent;
 import reporting.OutputService;
@@ -47,6 +48,7 @@ class ConcurrencyTest {
 	private ResourceExtent resources;
 	private SubscriberExtent subscribers;
 	private LoanExtent loans;
+	private RecordingAuditLogger audit;
 	private LibraryServices library;
 
 	@BeforeEach
@@ -79,6 +81,8 @@ class ConcurrencyTest {
 			assertEquals(1, loansHeldByStudents, "round " + round + ": exactly one student holds the game");
 			Student holder = (Student) game.getLoan().getSubscriber();
 			assertTrue(holder.getLoans().contains(game.getLoan()), "round " + round + ": the game's loan belongs to its holder");
+			assertEquals(1, audit.count("LOAN_CREATED"), "round " + round + ": one accepted loan audited");
+			assertEquals(LIBRARIANS - 1, audit.count("LOAN_REJECTED"), "round " + round + ": every refused attempt audited");
 		}
 	}
 
@@ -198,7 +202,8 @@ class ConcurrencyTest {
 		resources = new ResourceExtent();
 		subscribers = new SubscriberExtent();
 		loans = new LoanExtent();
-		library = new LibraryServices(resources, subscribers, loans);
+		audit = new RecordingAuditLogger();
+		library = new LibraryServices(resources, subscribers, loans, audit);
 	}
 
 	private Resource addBook() {

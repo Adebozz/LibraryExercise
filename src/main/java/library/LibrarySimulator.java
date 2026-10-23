@@ -2,6 +2,7 @@ package library;
 
 import java.util.GregorianCalendar;
 
+import audit.ConsoleAuditLogger;
 import loans.LoanExtent;
 import reporting.ConsoleOutputService;
 import reporting.FileOutputService;
@@ -16,7 +17,7 @@ public class LibrarySimulator {
 		ResourceExtent resources = new ResourceExtent();
 		SubscriberExtent subscribers = new SubscriberExtent();
 		LoanExtent loans = new LoanExtent();
-		library = new LibraryServices(resources, subscribers, loans);
+		library = new LibraryServices(resources, subscribers, loans, new ConsoleAuditLogger());
 		reporting = new LibraryReportingService(library);
 		reporting.addOutputService(new ConsoleOutputService());
 		reporting.addOutputService(new FileOutputService(REPORT_FILE));

@@ -2,6 +2,8 @@ package library;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
+import audit.AuditLogger;
+
 import loans.*;
 
 import subscribers.*;
@@ -21,15 +23,17 @@ public class LibraryServices {
 	private final ResourceExtent resources;
 	private final SubscriberExtent subscribers;
 	private final LoanExtent loans;
+	private final AuditLogger audit;
 	// Fair: waiting librarians are served in arrival order, so a busy caller
 	// (e.g. frequent reports) cannot starve the others. Costs a little
 	// throughput, which does not matter at this load.
 	private final ReentrantLock lock = new ReentrantLock(true);
 
-	public LibraryServices(ResourceExtent resources, SubscriberExtent subscribers, LoanExtent loans) {
+	public LibraryServices(ResourceExtent resources, SubscriberExtent subscribers, LoanExtent loans, AuditLogger audit) {
 		this.resources = resources;
 		this.subscribers = subscribers;
 		this.loans = loans;
+		this.audit = Objects.requireNonNull(audit, "audit");
 	}
 	public void addResource(Resource resource) {
 		lock.lock();

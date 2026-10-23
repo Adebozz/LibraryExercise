@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import audit.RecordingAuditLogger;
 import loans.LoanExtent;
 import resources.Resource;
 import resources.ResourceExtent;
@@ -22,7 +23,7 @@ class BorrowingLimitTest {
 
 	@BeforeEach
 	void setUp() {
-		library = new LibraryServices(new ResourceExtent(), new SubscriberExtent(), new LoanExtent());
+		library = new LibraryServices(new ResourceExtent(), new SubscriberExtent(), new LoanExtent(), new RecordingAuditLogger());
 	}
 
 	@Test

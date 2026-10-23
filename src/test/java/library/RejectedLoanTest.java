@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import audit.RecordingAuditLogger;
 import loans.LoanExtent;
 import resources.Resource;
 import resources.ResourceExtent;
@@ -27,7 +28,7 @@ class RejectedLoanTest {
 
 	@BeforeEach
 	void setUp() {
-		library = new LibraryServices(new ResourceExtent(), new SubscriberExtent(), new LoanExtent());
+		library = new LibraryServices(new ResourceExtent(), new SubscriberExtent(), new LoanExtent(), new RecordingAuditLogger());
 	}
 
 	@Test
